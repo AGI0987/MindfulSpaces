@@ -4,7 +4,7 @@ const bodyParser = require('body-parser');
 const dotenv = require('dotenv');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 
-// Load environment variables
+
 dotenv.config();
 
 const apiKey = process.env.GEMINI_API_KEY;
@@ -76,7 +76,7 @@ app.post('/chat', async (req, res) => {
   }
 });
 
-// Start the server
+
 app.listen(port, () => {
   console.log(`Server listening on port ${port}`);
 });

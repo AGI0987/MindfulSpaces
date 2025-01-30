@@ -56,7 +56,7 @@ app.post('/chat', async (req, res) => {
     const chatSession = model.startChat({
       history: history.map(entry => ({
         role: entry.role,
-        parts: [{ text: entry.parts[0] }],
+        parts: [{ text: entry.parts.join(' ') }],
       })),
     });
 

@@ -49,32 +49,30 @@ app.post('/chat', async (req, res) => {
       return res.status(400).json({ error: 'Invalid request body' });
     }
 
-    // Keep track of chat history
     let history = req.body.history || [];
 
-    // Initialize chat session
-    const chatSession = model.startChat({
+    const chatSession = model.startChatSession({
       history: history.map(entry => ({
         role: entry.role,
         parts: [{ text: entry.parts.join(' ') }],
       })),
     });
 
-    // Get the model's response to user input
     const response = await chatSession.sendMessage(userInput);
-    const modelResponse = response.text();
 
-    // Append the user input and model response to the history
+    // Extract response correctly
+    const modelResponse = response.candidates[0]?.content?.parts[0]?.text || "I'm not sure how to respond.";
+
     history.push({ role: 'user', parts: [userInput] });
     history.push({ role: 'model', parts: [modelResponse] });
 
-    // Return the updated history and model response
     res.json({ response: modelResponse, history });
   } catch (error) {
     console.error('Error in chat endpoint:', error);
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
+
 
 
 app.listen(port, () => {

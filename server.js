@@ -51,17 +51,16 @@ app.post('/chat', async (req, res) => {
 
     let history = req.body.history || [];
 
-    const chatSession = model.startChatSession({
+    // Assuming model.sendMessage handles the chat process
+    const response = await model.sendMessage({
       history: history.map(entry => ({
         role: entry.role,
         parts: [{ text: entry.parts.join(' ') }],
       })),
+      message: userInput,
     });
 
-    const response = await chatSession.sendMessage(userInput);
-
-    // Extract response correctly
-    const modelResponse = response.candidates[0]?.content?.parts[0]?.text || "I'm not sure how to respond.";
+    const modelResponse = response.candidates?.[0]?.content?.parts?.[0]?.text || "I'm not sure how to respond.";
 
     history.push({ role: 'user', parts: [userInput] });
     history.push({ role: 'model', parts: [modelResponse] });
@@ -69,7 +68,7 @@ app.post('/chat', async (req, res) => {
     res.json({ response: modelResponse, history });
   } catch (error) {
     console.error('Error in chat endpoint:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    res.status(500).json({ error: 'Internal Server Error', details: error.message });
   }
 });
 

@@ -62,7 +62,7 @@ app.post('/chat', async (req, res) => {
 
     // Get the model's response to user input
     const response = await chatSession.sendMessage(userInput);
-    const modelResponse = response.response.text();
+    const modelResponse = response.text();
 
     // Append the user input and model response to the history
     history.push({ role: 'user', parts: [userInput] });

@@ -44,35 +44,40 @@ app.get('/', (req, res) => {
 // Chat endpoint
 app.post('/chat', async (req, res) => {
   try {
-    console.log("Received request at /chat:", req.body);
-
     const userInput = req.body.userInput;
     if (!userInput) {
-      console.error("Missing user input");
       return res.status(400).json({ error: 'Invalid request body' });
     }
 
-    console.log("Calling Gemini API with:", userInput);
-    
-    // Call Gemini API using generateContent()
-    const response = await model.generateContent(userInput);
-    
-    console.log("Gemini API Response:", response);
+    // Keep track of chat history
+    let history = req.body.history || [];
 
-    // Extract response correctly
-    const modelResponse = response?.candidates?.[0]?.content?.parts?.[0]?.text || "I'm not sure how to respond.";
+    // Initialize chat session
+    const chatSession = model.startChat({
+      history: history.map(entry => ({
+        role: entry.role,
+        parts: [{ text: entry.parts[0] }],
+      })),
+    });
 
-    res.json({ response: modelResponse });
+    // Get the model's response to user input
+    const response = await chatSession.sendMessage(userInput);
+    const modelResponse = response.response.text();
 
+    // Append the user input and model response to the history
+    history.push({ role: 'user', parts: [userInput] });
+    history.push({ role: 'model', parts: [modelResponse] });
+
+    // Return the updated history and model response
+    res.json({ response: modelResponse, history });
   } catch (error) {
     console.error('Error in chat endpoint:', error);
-    res.status(500).json({ error: 'Internal Server Error', details: error.message });
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 });
-
-
 
 
 app.listen(port, () => {
   console.log(`Server listening on port ${port}`);
 });
+  

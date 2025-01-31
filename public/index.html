@@ -292,23 +292,25 @@
         const hamburger = document.getElementById('hamburger');
 
         async function sendMessage() {
-            const userMessage = userInput.value.trim();
-            if (!userMessage) return;
-            userInput.value = '';
-            chatHistory.innerHTML += `<div class="user-message">🧑‍🎓: ${userMessage}</div>`;
+            const userMessage = userInput.value;
+            userInput.value = ''; 
             try {
                 const response = await fetch('/chat', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ userInput: userMessage }),
                 });
-                if (!response.ok) throw new Error('Server error');
+
                 const data = await response.json();
-                chatHistory.innerHTML += `<div class="bot-message">🤖: ${data.response}</div>`;
+                const botMessage = data.response;
+
+                // Add chat message to the chat history
+                chatHistory.innerHTML += <div class="user-message">🧑‍🎓: ${userMessage}</div>;
+                chatHistory.innerHTML += <div class="bot-message">🤖: ${botMessage}</div>;
+                chatHistory.scrollTop = chatHistory.scrollHeight; 
             } catch (error) {
-                chatHistory.innerHTML += `<div class="bot-message" style="color: red;">⚠️ Error: Could not fetch response</div>`;
+                console.error('Error:', error);
             }
-            chatHistory.scrollTop = chatHistory.scrollHeight;
         }
 
         form.addEventListener('submit', (event) => {

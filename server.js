@@ -4,7 +4,7 @@ const bodyParser = require('body-parser');
 const dotenv = require('dotenv');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 
-
+// Load environment variables
 dotenv.config();
 
 const apiKey = process.env.GEMINI_API_KEY;
@@ -34,11 +34,11 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 // Serve static files (index.html, loader.gif, etc.)
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static('public'));
 
 // Serve index.html
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+  res.sendFile(path.join(__dirname, '/public/index.html'));
 });
 
 // Chat endpoint
@@ -49,8 +49,8 @@ app.post('/chat', async (req, res) => {
       return res.status(400).json({ error: 'Invalid request body' });
     }
 
-    // Keep track of chat history
-    let history = req.body.history || [];
+    // Keep track of chat history (like the history in chat.py)
+    let history = req.body.history || []; // If history doesn't exist, create an empty array
 
     // Initialize chat session
     const chatSession = model.startChat({
@@ -76,8 +76,7 @@ app.post('/chat', async (req, res) => {
   }
 });
 
-
+// Start the server
 app.listen(port, () => {
   console.log(`Server listening on port ${port}`);
 });
-  

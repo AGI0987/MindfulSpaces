@@ -305,8 +305,8 @@
                 const botMessage = data.response;
 
                 // Add chat message to the chat history
-                chatHistory.innerHTML += <div class="user-message">🧑‍🎓: ${userMessage}</div>;
-                chatHistory.innerHTML += <div class="bot-message">🤖: ${botMessage}</div>;
+                chatHistory.innerHTML += `<div class="user-message">🧑‍🎓: ${userMessage}</div>`;
+                chatHistory.innerHTML += `<div class="bot-message">🤖: ${botMessage}</div>`;
                 chatHistory.scrollTop = chatHistory.scrollHeight; 
             } catch (error) {
                 console.error('Error:', error);
